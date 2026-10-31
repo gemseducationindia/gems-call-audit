@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>GEMS Call Audit</title>
+<link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Light only, same look as the Marketing Audit: GEMS navy (#041E42) for emphasis, GEMS cyan (#00A3E0) for highlights, Apple-style neutrals. */
+:root {
+  --navy: #041E42; --cyan: #00A3E0; --cyan-ink: #0077A8; --tint: #E8F6FC; --tint-2: #CDEBF8;
+  --bg: #FFFFFF; --soft: #F5F5F7; --line: #E5E5EA; --line-2: #D2D2D7;
+  --ink: #1D1D1F; --ink-2: #424245; --muted: #6E6E73; --faint: #A1A1A6;
+  --good: #1A7F37; --good-bg: #E9F6EC; --watch: #9A6700; --watch-bg: #FFF4D6; --bad: #C4302B; --bad-bg: #FCEDEC;
+  --c: #041E42; --p: #00A3E0; --m: #A1A1A6;
+  --nav-h: 52px; --radius: 14px;
+  color-scheme: light;
+}
+[hidden] { display: none !important; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font: 15px/1.47 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; }
+button, input, select, textarea { font: inherit; color: inherit; letter-spacing: inherit; }
+a { color: var(--cyan-ink); text-decoration: none; } a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 6px; }
+.num { font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1440px; margin: 0 auto; padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 900px) { .wrap { padding-inline: 32px; } }
+
+/* ---------- sign in ---------- */
+#gate { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; background: linear-gradient(180deg, #FFFFFF 0%, var(--soft) 100%); }
+.signin { width: 100%; max-width: 380px; display: grid; gap: 22px; text-align: center; }
+.logo { display: inline-flex; align-items: center; gap: 10px; justify-self: center; font-weight: 600; font-size: 15px; color: var(--navy); letter-spacing: -0.01em; white-space: nowrap; }
+.logo .m { display: block; width: 28px; height: 28px; }
+.signin .logo .m { width: 40px; height: 40px; }
+.signin h1 { font-size: 40px; line-height: 1.08; font-weight: 600; letter-spacing: -0.03em; margin: 0; }
+.signin p { margin: -10px 0 0; color: var(--muted); font-size: 17px; }
+.fields { display: grid; border: 1px solid var(--line-2); border-radius: 12px; overflow: hidden; background: #fff; text-align: left; }
+.fields input, .fields select { font-size: 17px; border: 0; padding: 15px 16px; background: transparent; outline: none; width: 100%; }
+.fields select { appearance: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236E6E73' stroke-width='1.6'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E") no-repeat right 16px center / 14px; }
+.fields > * + * { border-top: 1px solid var(--line) !important; }
+.fields:focus-within { border-color: var(--cyan); box-shadow: 0 0 0 4px var(--tint); }
+.keep { display: flex; gap: 8px; align-items: center; justify-content: center; color: var(--muted); font-size: 14px; }
+.btn-primary { border: 0; background: var(--navy); color: #fff; border-radius: 980px; padding: 13px 22px; font-size: 17px; font-weight: 500; cursor: pointer; }
+.btn-primary:hover { background: #0A2C5E; }
+.btn-primary[disabled] { opacity: .6; cursor: progress; }
+.err { color: var(--bad); font-size: 14px; min-height: 1.2em; margin: -8px 0 0; }
+
+/* ---------- nav + sticky filters ---------- */
+.top { position: sticky; top: 0; z-index: 30; background: rgba(255,255,255,.82); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid var(--line); }
+.nav { height: var(--nav-h); display: flex; align-items: center; gap: 16px; }
+.tabs { display: flex; gap: 4px; margin-left: 12px; }
+.tab { border: 0; background: transparent; padding: 6px 12px; border-radius: 980px; font-size: 14px; color: var(--ink-2); cursor: pointer; white-space: nowrap; }
+.tab:hover { background: var(--soft); text-decoration: none; }
+.tab[aria-selected="true"] { background: var(--ink); color: #fff; }
+.who { margin-left: auto; display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.who b { color: var(--ink); font-weight: 500; }
+.link { border: 0; background: none; color: var(--cyan-ink); cursor: pointer; padding: 4px 0; font-size: 13px; }
+.bar { display: flex; gap: 10px; align-items: center; padding: 8px 0 10px; overflow-x: auto; scrollbar-width: none; }
+.bar::-webkit-scrollbar { display: none; }
+.ctl { flex: none; display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border: 1px solid var(--line-2); border-radius: 980px; background: #fff; cursor: pointer; font-size: 14px; white-space: nowrap; }
+.ctl:hover { border-color: var(--faint); }
+.ctl[aria-expanded="true"] { border-color: var(--navy); box-shadow: 0 0 0 3px var(--tint); }
+.ctl .cap { color: var(--muted); }
+.ctl svg { width: 14px; height: 14px; flex: none; color: var(--muted); }
+.seg { flex: none; display: inline-flex; padding: 3px; background: var(--soft); border-radius: 980px; gap: 2px; }
+.seg button { border: 0; background: transparent; height: 28px; padding: 0 12px; border-radius: 980px; font-size: 13px; color: var(--ink-2); cursor: pointer; white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: #fff; color: var(--ink); font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 0 0 .5px rgba(0,0,0,.04); }
+.sep { flex: none; width: 1px; height: 20px; background: var(--line); }
+.mobile-tabs { display: none; }
+@media (max-width: 960px) {
+  .nav .tabs { display: none; }
+  .mobile-tabs { display: flex; padding-top: 6px; overflow-x: auto; scrollbar-width: none; margin-left: 0; }
+  .who .name { display: none; }
+}
+
+/* ---------- popovers (calendar, pickers) ---------- */
+.pop { position: fixed; z-index: 50; background: #fff; border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 60px rgba(0,0,0,.14), 0 2px 8px rgba(0,0,0,.06); }
+.cal { display: grid; grid-template-columns: auto 1fr; }
+.cal .presets { display: grid; align-content: start; gap: 2px; padding: 14px 10px; border-right: 1px solid var(--line); min-width: 150px; }
+.cal .presets button { text-align: left; border: 0; background: none; padding: 7px 12px; border-radius: 8px; font-size: 14px; cursor: pointer; color: var(--ink-2); }
+.cal .presets button:hover { background: var(--soft); }
+.cal .presets button[aria-pressed="true"] { background: var(--tint); color: var(--navy); font-weight: 500; }
+.cal .body { padding: 16px 18px 14px; display: grid; gap: 12px; }
+.cal .months { display: flex; gap: 28px; }
+.cal .month { display: grid; gap: 8px; }
+.cal .mhead { display: flex; align-items: center; justify-content: space-between; height: 28px; font-weight: 600; font-size: 15px; }
+.cal .arrow { border: 0; background: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; color: var(--ink-2); display: grid; place-items: center; }
+.cal .arrow:hover:not([disabled]) { background: var(--soft); }
+.cal .arrow[disabled] { color: var(--line-2); cursor: default; }
+.cal .arrow.ghost { visibility: hidden; }
+.cal .grid { display: grid; grid-template-columns: repeat(7, 36px); row-gap: 2px; }
+.cal .dow { font-size: 11px; color: var(--faint); text-align: center; height: 22px; font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
+.cal .day { position: relative; height: 36px; border: 0; background: none; padding: 0; cursor: pointer; font-size: 14px; font-variant-numeric: tabular-nums; }
+.cal .day span { position: relative; z-index: 1; display: grid; place-items: center; width: 34px; height: 34px; margin: 1px auto; border-radius: 50%; }
+.cal .day:hover:not([disabled]) span { background: var(--soft); }
+.cal .day[disabled] { color: var(--line-2); cursor: default; }
+.cal .day.in::before { content: ""; position: absolute; inset: 1px 0; background: var(--tint); }
+.cal .day.start::before { left: 50%; }
+.cal .day.end::before { right: 50%; }
+.cal .day.start.end::before { display: none; }
+.cal .day.start span, .cal .day.end span { background: var(--navy) !important; color: #fff; font-weight: 600; }
+.cal .day.today span { box-shadow: inset 0 0 0 1px var(--cyan); }
+.cal .foot { display: flex; align-items: center; gap: 10px; border-top: 1px solid var(--line); padding-top: 12px; }
+.cal .foot .sum { font-size: 13px; color: var(--muted); margin-right: auto; }
+.btn { border: 1px solid var(--line-2); background: #fff; border-radius: 980px; padding: 6px 16px; font-size: 14px; cursor: pointer; }
+.btn.dark { background: var(--navy); border-color: var(--navy); color: #fff; }
+.btn[disabled] { opacity: .4; cursor: default; }
+.cal.single { grid-template-columns: 1fr; }
+@media (max-width: 720px) {
+  .cal { grid-template-columns: 1fr; }
+  .cal .presets { border-right: 0; border-bottom: 1px solid var(--line); display: flex; overflow-x: auto; padding: 10px; }
+  .cal .presets button { white-space: nowrap; }
+  .cal .months .month + .month { display: none; }
+  .cal .months .month:first-child .arrow.ghost { visibility: visible; }
+}
+.picker { width: 340px; max-height: min(70vh, 560px); display: grid; grid-template-rows: auto 1fr auto; }
+.picker .ph { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 8px; font-weight: 600; }
+.picker .list { overflow-y: auto; padding: 0 8px 8px; }
+.picker label { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+.picker label:hover { background: var(--soft); }
+.picker input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--navy); margin: 0; }
+.picker label .n { margin-left: auto; color: var(--faint); font-size: 12px; }
+.picker .pf { display: flex; justify-content: space-between; gap: 8px; padding: 10px 16px 14px; border-top: 1px solid var(--line); }
+
+/* ---------- page ---------- */
+main { padding-block: 28px 64px; display: grid; gap: 44px; }
+.ph1 { display: flex; align-items: end; gap: 16px; flex-wrap: wrap; }
+.ph1 h1 { font-size: 34px; font-weight: 600; letter-spacing: -0.03em; margin: 0; line-height: 1.1; }
+.ph1 p { margin: 6px 0 0; color: var(--muted); }
+.ph1 .right { margin-left: auto; }
+h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
+h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.015em; margin: 0; }
+h3 span, h2 span { font-weight: 400; color: var(--muted); font-size: 14px; margin-left: 6px; letter-spacing: -0.01em; }
+.sec { display: grid; gap: 14px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.kpi { padding: 18px 20px 18px 0; display: grid; gap: 4px; }
+.kpi + .kpi { padding-left: 20px; border-left: 1px solid var(--line); }
+.kpi .k { font-size: 13px; color: var(--muted); }
+.kpi .v { font-size: 32px; line-height: 1.1; font-weight: 600; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+.kpi .s { font-size: 12px; color: var(--muted); }
+@media (max-width: 720px) {
+  .kpis { grid-template-columns: 1fr 1fr; }
+  .kpi, .kpi + .kpi { padding: 14px 12px; border-left: 0; border-top: 1px solid var(--line); }
+  .kpi:nth-child(-n+2) { border-top: 0; }
+  .kpi .v { font-size: 26px; }
+}
+.panel { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fff; }
+.pad { padding: 18px 20px; }
+.scroll { overflow-x: auto; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-items: start; }
+.side { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 960px) { .two, .side { grid-template-columns: 1fr; } }
+table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { padding: 9px 12px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+thead th { font-weight: 500; color: var(--muted); font-size: 12px; background: var(--soft); vertical-align: bottom; }
+thead tr.groups th { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; font-weight: 600; color: var(--ink-2); text-align: left; border-bottom: 0; padding-bottom: 2px; }
+thead tr.cols th { padding-top: 2px; }
+th.sortable { cursor: pointer; user-select: none; } th.sortable:hover { color: var(--ink); }
+.g0 { border-left: 1px solid var(--line); }
+.first, .l, th.wrapc { text-align: left; }
+.first { position: sticky; left: 0; z-index: 2; background: #fff; min-width: 180px; max-width: 320px; overflow: hidden; text-overflow: ellipsis; box-shadow: 1px 0 0 var(--line); }
+thead .first { background: var(--soft); z-index: 3; }
+tbody tr:hover td { background: #FAFAFC; }
+tbody tr.click { cursor: pointer; }
+tr.total td { font-weight: 600; background: var(--soft); border-bottom: 0; }
+td.na { color: var(--line-2); }
+td .p { color: var(--muted); font-weight: 400; font-size: 12px; margin-left: 4px; }
+td.wrapc { white-space: normal; min-width: 260px; max-width: 520px; text-align: left; color: var(--ink-2); }
+.empty { color: var(--muted); font-size: 14px; padding: 14px 16px; }
+.note { font-size: 12px; color: var(--muted); margin: 0; }
+.more { justify-self: center; }
+
+/* pills, scores, bars */
+.pill { display: inline-block; padding: 2px 9px; border-radius: 980px; font-size: 12px; font-weight: 500; background: var(--soft); color: var(--ink-2); white-space: nowrap; }
+.pill.good { background: var(--good-bg); color: var(--good); } .pill.watch { background: var(--watch-bg); color: var(--watch); } .pill.poor { background: var(--bad-bg); color: var(--bad); }
+.pill.na { background: var(--soft); color: var(--faint); }
+.score { font-weight: 600; } .score.good { color: var(--good); } .score.watch { color: var(--watch); } .score.poor { color: var(--bad); } .score.na { color: var(--faint); font-weight: 400; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.bars { display: grid; gap: 10px; }
+.brow { display: grid; grid-template-columns: minmax(110px, 200px) 1fr 70px; gap: 12px; align-items: center; font-size: 13px; }
+.brow .lb { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); }
+.brow .tr { position: relative; height: 10px; background: var(--soft); border-radius: 980px; overflow: hidden; display: flex; }
+.brow .tr i { display: block; height: 100%; }
+.brow .tr .mk { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--ink); border-radius: 1px; }
+.brow .vl { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+button.brow { border: 0; background: none; padding: 4px 6px; margin: -4px -6px; border-radius: 8px; cursor: pointer; text-align: left; width: calc(100% + 12px); }
+button.brow:hover, button.brow[aria-pressed="true"] { background: var(--soft); }
+.stack { display: flex; height: 14px; border-radius: 980px; overflow: hidden; background: var(--soft); }
+.stack i { display: block; height: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted); margin-top: 10px; }
+.legend span { display: inline-flex; align-items: center; }
+.vcols { display: flex; align-items: flex-end; gap: 6px; padding-top: 6px; }
+.vc { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
+.vc b { font-size: 11px; font-weight: 500; color: var(--muted); font-variant-numeric: tabular-nums; height: 14px; }
+.vc .vb { height: 110px; width: 100%; display: flex; align-items: flex-end; justify-content: center; }
+.vc .vb i { display: block; width: 100%; max-width: 30px; border-radius: 6px 6px 2px 2px; }
+.vc span { font-size: 10.5px; color: var(--faint); white-space: nowrap; height: 14px; }
+.heat td { text-align: center; }
+.heat td.first { text-align: left; }
+
+/* counsellor cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.ccard { background: var(--soft); border-radius: var(--radius); padding: 18px 20px; display: grid; gap: 12px; color: inherit; }
+.ccard:hover { text-decoration: none; background: #EFEFF2; }
+.ccard .top2 { display: flex; align-items: center; gap: 12px; }
+.ccard .nm { font-weight: 600; } .ccard .sb { font-size: 12px; color: var(--muted); }
+.ccard .st { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.ccard .st div { display: grid; gap: 2px; } .ccard .st b { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; } .ccard .st span { font-size: 12px; color: var(--muted); }
+.av { width: 40px; height: 40px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; font-weight: 600; font-size: 14px; flex: none; }
+.av.lg { width: 56px; height: 56px; font-size: 19px; }
+.ring { position: relative; display: inline-grid; place-items: center; flex: none; margin-left: auto; }
+.ring svg { position: absolute; inset: 0; }
+.ring span { position: relative; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 13px; padding: 5px 11px; border-radius: 980px; background: var(--soft); }
+.chip.plus { background: var(--good-bg); color: #145A2B; } .chip.minus { background: var(--watch-bg); color: #6B4A00; }
+.headline { font-size: 19px; line-height: 1.4; letter-spacing: -0.015em; margin: 0; max-width: 90ch; }
+ol.list { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+
+/* call page */
+.crumb { font-size: 13px; color: var(--muted); }
+.callhead { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.callhead h1 { font-size: 30px; font-weight: 600; letter-spacing: -0.03em; margin: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--muted); font-size: 14px; margin-top: 4px; }
+.player { display: grid; gap: 10px; }
+.player audio { width: 100%; }
+.timeline { position: relative; height: 16px; background: var(--soft); border-radius: 6px; overflow: hidden; cursor: pointer; }
+.timeline span { position: absolute; top: 0; bottom: 0; }
+.timeline .C { background: var(--c); } .timeline .P { background: var(--p); } .timeline .M { background: var(--m); }
+.timeline .head { position: absolute; top: 0; bottom: 0; width: 2px; background: #FFB800; }
+.lead-line { font-size: 17px; line-height: 1.5; margin: 0; letter-spacing: -0.012em; }
+.coach { background: var(--tint); border-radius: 12px; padding: 12px 14px; font-size: 14px; margin-top: 12px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.tile { text-align: left; border: 1px solid transparent; border-radius: 12px; padding: 10px 12px; cursor: pointer; display: grid; gap: 2px; }
+.tile .tn { font-size: 13px; font-weight: 500; } .tile .tv { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.tile.good { background: var(--good-bg); color: #145A2B; } .tile.watch { background: var(--watch-bg); color: #6B4A00; } .tile.poor { background: var(--bad-bg); color: #8E1B12; } .tile.na { background: var(--soft); color: var(--muted); }
+.tile:hover, .tile.open { border-color: currentColor; }
+.cdetail { margin-top: 12px; font-size: 14px; display: grid; gap: 6px; }
+.cdetail p { margin: 0; color: var(--ink-2); }
+.ev { font-size: 13px; color: var(--ink-2); }
+.ts { border: 0; background: var(--tint); color: var(--cyan-ink); border-radius: 6px; padding: 1px 6px; font-size: 12px; cursor: pointer; font-variant-numeric: tabular-nums; }
+.transcript { max-height: 520px; overflow-y: auto; display: grid; gap: 2px; margin-top: 12px; }
+.ln { display: grid; grid-template-columns: 52px 84px 1fr; gap: 8px; padding: 5px 6px; border-radius: 8px; font-size: 14px; align-items: baseline; }
+.ln.now { background: var(--tint); }
+.ln .who2 { font-size: 12px; font-weight: 600; } .ln .who2.C { color: var(--c); } .ln .who2.P { color: var(--cyan-ink); } .ln .who2.M { color: var(--muted); }
+@media (max-width: 640px) { .ln { grid-template-columns: 46px 1fr; } .ln .who2 { display: none; } }
+details.box { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 18px; }
+details.box summary { cursor: pointer; font-weight: 600; }
+dl.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 12px 0 0; font-size: 14px; }
+dl.kv dt { color: var(--muted); text-transform: capitalize; } dl.kv dd { margin: 0; }
+.flag { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; padding: 6px 0; border-top: 1px solid var(--line); }
+.flag:first-child { border-top: 0; }
+.quote { font-size: 14px; color: var(--ink-2); padding: 10px 0; border-top: 1px solid var(--line); display: grid; gap: 4px; }
+.quote:first-child { border-top: 0; }
+.quote .src { font-size: 12px; color: var(--muted); }
+.review select, .review input, .review textarea { border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 8px; font-size: 14px; background: #fff; }
+.review textarea { width: 100%; min-height: 70px; }
+.review table td { text-align: left; border: 0; padding: 4px 8px 4px 0; }
+.flagbox { display: grid; gap: 4px; font-size: 14px; }
+.filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.filters input[type=search], .filters select { height: 34px; border: 1px solid var(--line-2); border-radius: 980px; padding: 0 14px; background: #fff; font-size: 14px; }
+.filters input[type=search] { min-width: 220px; }
+details.defs { border-top: 1px solid var(--line); padding-top: 18px; color: var(--muted); font-size: 13px; }
+details.defs summary { cursor: pointer; color: var(--ink-2); font-weight: 500; font-size: 14px; }
+details.defs p { margin: 10px 0 0; max-width: 120ch; }
+details.defs b { color: var(--ink-2); font-weight: 600; }
+
+/* week on week */
+.wcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.wcard { background: var(--soft); border-radius: var(--radius); padding: 18px 20px; display: grid; gap: 6px; }
+.wcard .k { font-size: 13px; color: var(--muted); }
+.wcard .v { font-size: 34px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.wcard .row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.delta { display: inline-flex; align-items: center; font-weight: 600; font-size: 12px; padding: 2px 8px; border-radius: 980px; background: var(--soft); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.wcard .delta { background: #fff; }
+.delta.up { color: var(--good); background: var(--good-bg); }
+.delta.down { color: var(--bad); background: var(--bad-bg); }
+tr.stage td { background: #fff; font-size: 11px; text-transform: uppercase; letter-spacing: .07em; font-weight: 600; color: var(--ink-2); padding-top: 16px; text-align: left; }
+.spark { display: block; margin-left: auto; }
+/* inside the Team Productivity site: its header already has the logo and sign-out, so the views become a compact
+   segmented control on the same row as the filters */
+.embed .nav { display: none; }
+.embed .top .wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-block: 8px; }
+.embed .mobile-tabs { display: inline-flex !important; flex: none; margin: 0; padding: 3px; gap: 2px; background: var(--soft); border-radius: 980px; }
+.embed .mobile-tabs .tab { height: 28px; padding: 0 12px; display: inline-flex; align-items: center; font-size: 13px; color: var(--ink-2); border-radius: 980px; }
+.embed .mobile-tabs .tab:hover { background: transparent; color: var(--ink); }
+.embed .mobile-tabs .tab[aria-selected="true"] { background: #fff; color: var(--ink); font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 0 0 .5px rgba(0,0,0,.04); }
+.embed .mobile-tabs .tab:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--cyan); }
+.embed .bar { flex: 1 1 auto; min-width: 0; padding: 0; }
+</style>
+</head>
+<body>
+<div id="gate" hidden>
+  <form class="signin" id="signin" autocomplete="on">
+    <span class="logo"><img class="m" src="logo.png" alt="GEMS" width="28" height="28">GEMS Education</span>
+    <h1>Call Audit</h1>
+    <p>Sign in to see your school's calls.</p>
+    <div class="fields">
+      <select id="login" aria-label="Login"></select>
+      <input id="pass" name="password" type="password" placeholder="Password" autocomplete="current-password" required>
+    </div>
+    <label class="keep"><input type="checkbox" id="keep" checked> Keep me signed in on this device</label>
+    <button class="btn-primary" id="go" type="submit">Sign in</button>
+    <p class="err" id="err" role="alert"></p>
+  </form>
+</div>
+
+<div id="app" hidden>
+  <div class="top">
+    <div class="wrap">
+      <nav class="nav">
+        <span class="logo"><img class="m" src="logo.png" alt="GEMS" width="28" height="28">Call Audit</span>
+        <div class="tabs" role="tablist" id="tabs"></div>
+        <div class="who"><span class="name">Signed in as <b id="whoName"></b></span><button class="link" id="signout">Sign out</button></div>
+      </nav>
+      <div class="tabs mobile-tabs" role="tablist" id="mtabs"></div>
+      <div class="bar" id="bar" aria-label="Filters"></div>
+    </div>
+  </div>
+  <main class="wrap" id="view"></main>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const SVGNS = "http://www.w3.org/2000/svg";
+  function h(tag, attrs, ...kids) {
+    const svg = tag.startsWith("svg:"), e = svg ? document.createElementNS(SVGNS, tag.slice(4)) : document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || v === false) continue;
+      if (k === "class") e.setAttribute("class", v);
+      else if (k === "html") e.innerHTML = v;   // only ever used with the fixed icon strings below
+      else if (k === "style") e.style.cssText = v;
+      else if (k.startsWith("on")) e[k] = v;
+      else e.setAttribute(k, v === true ? "" : v);
+    }
+    for (const c of kids.flat(Infinity)) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(c));
+    return e;
+  }
+  const ICON = {
+    cal: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/></svg>',
+    down: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m4 6 4 4 4-4"/></svg>',
+    right: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3.5 4.5 4.5L6 12.5"/></svg>',
+    left: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg>',
+    school: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M1.5 6 8 2.5 14.5 6 8 9.5z"/><path d="M4 7.5v3.5c1 1 2.5 1.5 4 1.5s3-.5 4-1.5V7.5"/></svg>',
+    person: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="5.5" r="2.8"/><path d="M2.5 14c.8-2.8 3-4.2 5.5-4.2s4.7 1.4 5.5 4.2"/></svg>',
+  };
+
+  // ---------- sign in: a login's password unwraps only that login's data keys ----------
+  const SESSION = "gems-call-audit-session";
+  const EMBED = new URLSearchParams(location.search).has("embed") && window.parent !== window;
+  if (EMBED) document.documentElement.classList.add("embed");
+  const sstore = {
+    get() { try { return JSON.parse(localStorage.getItem(SESSION)); } catch (e) { return null; } },
+    set(v) { try { localStorage.setItem(SESSION, JSON.stringify(v)); } catch (e) {} },
+    clear() { try { localStorage.removeItem(SESSION); } catch (e) {} },
+  };
+  const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+  let KEYS = {}, LOGINS = [];
+  const get = async (u) => { const r = await fetch(u, { cache: "no-store" }); if (!r.ok) throw new Error(u + ": " + r.status); return r; };
+  const dec = async (u, k) => { const b = new Uint8Array(await (await get(u)).arrayBuffer()); return crypto.subtle.decrypt({ name: "AES-GCM", iv: b.slice(0, 12) }, KEYS[k], b.slice(12)); };
+  async function unwrap(id, pass) {   // password -> PBKDF2 -> key-encryption key -> this login's data keys (throws DOMException if the password is wrong)
+    const k = await (await get("k/" + id + ".json")).json();
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+    const kek = await crypto.subtle.deriveKey({ name: "PBKDF2", salt: b64(k.salt), iterations: k.iter, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+    return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(k.iv) }, kek, b64(k.wrapped))));
+  }
+  async function open(payload) {
+    KEYS = {};
+    for (const [name, raw] of Object.entries(payload.keys)) KEYS[name] = await crypto.subtle.importKey("raw", b64(raw), "AES-GCM", false, ["decrypt"]);
+    const gz = await dec(payload.data, payload.data_key);
+    return JSON.parse(await new Response(new Blob([gz]).stream().pipeThrough(new DecompressionStream("gzip"))).text());
+  }
+  const audioUrl = (c) => dec("a/" + c.audio + ".enc", c.k).then((b) => URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })));
+  const showGate = (msg) => { $("#gate").hidden = false; $("#app").hidden = true; $("#err").textContent = msg || ""; $("#pass").focus(); };
+
+  $("#signin").addEventListener("submit", async (e) => {
+    e.preventDefault(); $("#err").textContent = ""; $("#go").disabled = true; $("#go").textContent = "Signing in…";
+    const id = $("#login").value;
+    try {
+      const payload = await unwrap(id, $("#pass").value);
+      const data = await open(payload);
+      try { localStorage.setItem("gems-call-audit-login", id); } catch (er) {}
+      if ($("#keep").checked) sstore.set({ id, payload });
+      $("#pass").value = ""; boot(data);
+    } catch (err) {
+      $("#err").textContent = err instanceof DOMException ? "That password didn't match this login. Check it and try again." : "Couldn't load the site's data. Check your connection, or reload in a minute.";
+    } finally { $("#go").disabled = false; $("#go").textContent = "Sign in"; }
+  });
+  $("#signout").onclick = () => { sstore.clear(); location.hash = ""; location.reload(); };
+  (async () => {
+    try { LOGINS = (await (await get("site.json")).json()).logins || []; } catch (e) {}
+    $("#login").replaceChildren(...LOGINS.map((l) => h("option", { value: l.id }, l.name)));
+    let last = null; try { last = localStorage.getItem("gems-call-audit-login"); } catch (e) {}
+    if (LOGINS.some((l) => l.id === last)) $("#login").value = last;
+    if (EMBED) {   // inside the Team Productivity site (same origin): it hands over this login's keys, nothing is stored here
+      try { const p = parent.gemsCallAuditPayload; if (p) { boot(await open(p)); return; } } catch (e) {}
+      $("#gate").hidden = false; $("#signin").replaceChildren(h("p", null, "Couldn't open the call audit. Reload the page.")); return;
+    }
+    // the standalone site is retired (Jay, 29 Oct 2026): the call audit now opens only inside the productivity dashboard
+    sstore.clear();
+    $("#gate").hidden = false;
+    $("#signin").replaceChildren(h("span", { class: "logo" }, h("img", { class: "m", src: "logo.png", alt: "GEMS", width: 28, height: 28 }), "GEMS Education"),
+      h("h1", null, "Call Audit has moved"), h("p", null, "It's now the Call audit tab of the productivity dashboard. Sign in there with your dashboard login."),
+      h("a", { class: "btn-primary", href: "../gems-team-productivity/", style: "text-decoration:none" }, "Open the dashboard"));
+    return;
+    const s = sstore.get();
+    if (s && s.payload) { try { boot(await open(s.payload)); return; } catch (e) { sstore.clear(); } }
+    showGate();
+  })();
+
+  // ---------- helpers ----------
+  const SHORT = { "GEMS Millennium School": "GMS", "GEMS Modern Academy": "GMA", "GEMS School of Excellence": "GSE" };
+  const short = (c) => { const [b, p] = String(c).split(" - "); return p ? (SHORT[b] || b) + " " + p : c; };
+  const int = (n) => Math.round(n).toLocaleString("en-IN");
+  const pct = (a, b) => (b ? Math.round((100 * a) / b) + "%" : null);
+  const avg = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : null);
+  const mmss = (s) => Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0");
+  const hrs = (s) => (s >= 3600 ? (s / 3600).toFixed(1) + " h" : Math.round(s / 60) + " min");
+  const parseTs = (t) => { const m = /^(\d+):(\d{2})$/.exec(String(t || "").trim()); return m ? +m[1] * 60 + +m[2] : null; };
+  const D8 = (iso) => new Date(iso + "T00:00:00Z");
+  const iso = (d) => d.toISOString().slice(0, 10);
+  const shift = (s, n) => { const d = D8(s); d.setUTCDate(d.getUTCDate() + n); return iso(d); };
+  const fmt = (s, o) => D8(s).toLocaleDateString("en-IN", Object.assign({ day: "numeric", month: "short", timeZone: "UTC" }, o || {}));
+  const fmtY = (s) => fmt(s, { year: "numeric" });
+  const span = (a, b) => (a === b ? fmtY(a) : a.slice(0, 4) === b.slice(0, 4) ? fmt(a) + " – " + fmtY(b) : fmtY(a) + " – " + fmtY(b));
+  const daysIn = (a, b) => Math.round((D8(b) - D8(a)) / 864e5) + 1;
+  const when = (w) => fmt(w.slice(0, 10)) + ", " + w.slice(11, 16);
+  const initials = (n) => n.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+
+  // ---------- popovers ----------
+  let POP = null;
+  function closePop() { if (!POP) return; POP.el.remove(); POP.anchor.setAttribute("aria-expanded", "false"); POP = null; }
+  function openPop(anchor, el) {
+    closePop(); document.body.append(el); anchor.setAttribute("aria-expanded", "true"); POP = { el, anchor };
+    const r = anchor.getBoundingClientRect(), w = el.offsetWidth, vw = document.documentElement.clientWidth;
+    el.style.top = r.bottom + 8 + "px";
+    el.style.left = Math.max(8, Math.min(r.left, vw - w - 8)) + "px";
+    if (w > vw - 16) { el.style.left = "8px"; el.style.right = "8px"; }
+    el.style.maxHeight = window.innerHeight - r.bottom - 16 + "px"; el.style.overflowY = "auto";
+  }
+  document.addEventListener("mousedown", (e) => { if (POP && !POP.el.contains(e.target) && !POP.anchor.contains(e.target)) closePop(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && POP) { const a = POP.anchor; closePop(); a.focus(); } });
+  let lastW = window.innerWidth;
+  window.addEventListener("resize", () => { if (window.innerWidth !== lastW) { lastW = window.innerWidth; closePop(); } });
+  window.addEventListener("scroll", (e) => { if (POP && !POP.el.contains(e.target)) closePop(); }, true);
+
+  // Calendar: range mode (two months, presets) or single mode (one month, a day applies at once)
+  function calendar(anchor, o) {
+    let a = o.from, b = o.to, hover = null, picking = false;
+    let view = (o.mode === "single" ? o.from : shift(o.to.slice(0, 8) + "01", -1)).slice(0, 7);   // left month, "YYYY-MM"
+    const addMonth = (ym, n) => { const d = D8(ym + "-01"); d.setUTCMonth(d.getUTCMonth() + n); return iso(d).slice(0, 7); };
+    const minM = o.min.slice(0, 7), maxM = o.max.slice(0, 7);
+    if (view < minM) view = minM;
+    const el = h("div", { class: "pop cal" + (o.mode === "single" ? " single" : ""), role: "dialog", "aria-label": o.label });
+    let days = [], presetBtns = [], sumEl = null, applyBtn = null;
+    function apply(f, t) { closePop(); o.onApply(f, t); }
+    // Hover and clicks only restyle the existing day buttons. Rebuilding them mid-click made the browser drop the end-date click.
+    function paint() {
+      const lo = picking ? (hover && hover < a ? hover : a) : a, hi = picking ? (hover && hover > a ? hover : a) : b;
+      for (const btn of days) {
+        const s = btn.dataset.d, single = o.mode === "single";
+        btn.classList.toggle("in", !single && !!lo && !!hi && s >= lo && s <= hi);
+        btn.classList.toggle("start", single ? s === a : s === lo);
+        btn.classList.toggle("end", single ? s === a : s === hi);
+      }
+      for (const [btn, f, t] of presetBtns) btn.setAttribute("aria-pressed", String(!picking && a === f && b === t));
+      if (sumEl) sumEl.textContent = picking ? "Now pick the end date" : a && b ? span(a, b) + " · " + daysIn(a, b) + " days" : "";
+      if (applyBtn) applyBtn.disabled = picking || !a || !b;
+    }
+    function render() {
+      el.textContent = ""; days = []; presetBtns = [];
+      if (o.presets) el.append(h("div", { class: "presets" }, o.presets.map(([label, f, t]) => { const btn = h("button", { type: "button", onclick: () => apply(f, t) }, label); presetBtns.push([btn, f, t]); return btn; })));
+      const months = o.mode === "single" ? [view] : [view, addMonth(view, 1)];
+      const body = h("div", { class: "body" }), row = h("div", { class: "months" });
+      months.forEach((ym, mi) => {
+        const last = mi === months.length - 1;
+        const prev = h("button", { class: "arrow" + (mi === 0 ? "" : " ghost"), type: "button", "aria-label": "Previous month", html: ICON.left, disabled: view <= minM, onclick: () => { view = addMonth(view, -1); render(); } });
+        const next = h("button", { class: "arrow" + (last ? "" : " ghost"), type: "button", "aria-label": "Next month", html: ICON.right, disabled: addMonth(view, months.length - 1) >= maxM, onclick: () => { view = addMonth(view, 1); render(); } });
+        const title = D8(ym + "-01").toLocaleDateString("en-IN", { month: "long", year: "numeric", timeZone: "UTC" });
+        const grid = h("div", { class: "grid", role: "grid" }, ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => h("div", { class: "dow" }, d)));
+        const first = D8(ym + "-01"), pad = (first.getUTCDay() + 6) % 7;
+        for (let i = 0; i < pad; i++) grid.append(h("div"));
+        for (let d = first; iso(d).slice(0, 7) === ym; d = D8(shift(iso(d), 1))) {
+          const s = iso(d);
+          const btn = h("button", { class: "day" + (s === o.max ? " today" : ""), type: "button", "data-d": s, disabled: s < o.min || s > o.max, "aria-label": fmtY(s),
+            onmouseenter: () => { if (picking) { hover = s; paint(); } },
+            onclick: () => {
+              if (o.mode === "single") return apply(s, s);
+              if (!picking) { a = s; b = null; picking = true; hover = s; } else { if (s < a) { b = a; a = s; } else b = s; picking = false; hover = null; }
+              paint();
+            } }, h("span", null, String(d.getUTCDate())));
+          days.push(btn); grid.append(btn);
+        }
+        row.append(h("div", { class: "month" }, h("div", { class: "mhead" }, prev, title, next), grid));
+      });
+      body.append(row);
+      if (o.mode !== "single") {
+        sumEl = h("span", { class: "sum" }); applyBtn = h("button", { class: "btn dark", type: "button", onclick: () => apply(a, b) }, "Apply");
+        body.append(h("div", { class: "foot" }, sumEl, h("button", { class: "btn", type: "button", onclick: closePop }, "Cancel"), applyBtn));
+      }
+      el.append(body); paint();
+    }
+    render(); openPop(anchor, el);
+  }
+
+  // Multi-select picker (campuses, counsellors): items [[value, label, count]]
+  function picker(anchor, title, items, picked, onApply, unit) {
+    const all = items.map((x) => x[0]), temp = new Set(picked.size ? picked : all);
+    const el = h("div", { class: "pop picker", role: "dialog", "aria-label": title });
+    function render() {
+      el.textContent = "";
+      el.append(h("div", { class: "ph" }, title, h("button", { class: "link", type: "button", onclick: () => { temp.size === all.length ? temp.clear() : all.forEach((v) => temp.add(v)); render(); } }, temp.size === all.length ? "Clear all" : "Select all")));
+      el.append(h("div", { class: "list" }, items.map(([v, label, n]) => {
+        const cb = h("input", { type: "checkbox" }); cb.checked = temp.has(v);
+        cb.onchange = () => { cb.checked ? temp.add(v) : temp.delete(v); render(); };
+        return h("label", null, cb, label, h("span", { class: "n" }, int(n) + " " + unit));
+      })));
+      el.append(h("div", { class: "pf" }, h("button", { class: "btn", type: "button", onclick: closePop }, "Cancel"),
+        h("button", { class: "btn dark", type: "button", disabled: temp.size === 0, onclick: () => { closePop(); onApply(temp.size === all.length ? new Set() : new Set(temp)); } }, "Show " + (temp.size === all.length ? "all" : temp.size))));
+    }
+    render(); openPop(anchor, el);
+  }
+
+  // ---------- data ----------
+  let D, S, REP, CALL;
+  const RATING = { 2: ["Met", "good"], 1: ["Partly", "watch"], 0: ["Missed", "poor"], null: ["N/A", "na"] };
+  const band3 = (v, good, ok) => (v == null ? "na" : v >= good ? "good" : v >= ok ? "watch" : "poor");
+  const scoreBand = (s) => band3(s, D.bands.good, D.bands.needs_work);
+  const LI = () => D.listening || {};
+  const talkBand = (v) => (v == null ? "na" : v <= LI().talk_pct.good_max ? "good" : v <= LI().talk_pct.watch_max ? "watch" : "poor");
+  const OUT_COLORS = { "Visit booked": "#1A7F37", "Callback scheduled": "#00A3E0", "Callback – no date": "#8FD3F0", "Handed to campus": "#041E42",
+    "Not interested": "#C4302B", "Not a lead": "#C7B98A", "Call dropped / unclear": "#D2D2D7" };
+  const COLORS = { good: "#1A7F37", watch: "#D9A21B", poor: "#C4302B", na: "#D2D2D7" };
+  // A scored call that is a real admission conversation (not a dropped call or a non-lead such as a job seeker)
+  const real = (c) => c.score !== undefined && c.outcome !== "Not a lead" && c.outcome !== "Call dropped / unclear";
+  const repName = (id) => (D.counsellors[id] || { name: id }).name;
+  const campName = (i) => (i >= 0 ? short(D.campuses[i]) : i === -1 ? "Lead with no campus" : "Not a CRM lead");
+
+  function boot(data) {
+    D = data; REP = {}; CALL = {};
+    for (const c of D.calls) CALL[c.id] = c;
+    $("#gate").hidden = true; $("#app").hidden = false;
+    $("#whoName").textContent = D.login || "";
+    const first = D.calls.length ? D.calls[0].when.slice(0, 10) : D.today;
+    S = { first, today: D.today, from: shift(D.today, -29) < first ? first : shift(D.today, -29), to: D.today, camps: new Set(), reps: new Set(),
+      wowEnd: D.today, calls: { q: "", show: "scored", outcome: "", flag: "", band: "", limit: 100, sort: ["when", -1] }, topic: null };
+    const TABS = [["overview", "Overview"], ["calls", "Calls"], ["counsellors", "Counsellors"], ["voice", "Parents' voice"], ["wow", "Week on week"]];
+    for (const box of [$("#tabs"), $("#mtabs")]) box.replaceChildren(...TABS.map(([id, label]) => h("a", { class: "tab", role: "tab", href: "#/" + id, "data-tab": id }, label)));
+    window.addEventListener("hashchange", route); route();
+  }
+
+  // calls in the current filters (date range, campuses, counsellors); dateless = ignore the date range
+  const inScope = (c, from, to) => (S.camps.size === 0 || S.camps.has(c.camp)) && (S.reps.size === 0 || S.reps.has(c.rep)) && (!from || (c.when >= from && c.when.slice(0, 10) <= to));
+  const scoped = (from = S.from, to = S.to) => D.calls.filter((c) => inScope(c, from, to));
+
+  function stats(calls) {
+    const conn = calls.filter((c) => c.talk > 0), aud = calls.filter((c) => c.auditable && c.rec), tx = calls.filter((c) => c.segs && c.auditable), sc = calls.filter((c) => c.score !== undefined);
+    const rl = sc.filter(real), withM = rl.filter((c) => c.metrics), long = withM.filter((c) => c.talk >= 120);
+    const leads = sc.filter((c) => c.outcome !== "Not a lead");
+    const crit = {}; for (const k of D.criteria) { const v = rl.map((c) => c.ratings[k.id] && c.ratings[k.id].r).filter((x) => x != null); crit[k.id] = v.length ? Math.round(50 * avg(v)) : null; }
+    const flags = {}; sc.forEach((c) => (c.flags || []).forEach((f) => (flags[f.type] = (flags[f.type] || 0) + 1)));
+    const outcomes = {}; sc.forEach((c) => (outcomes[c.outcome] = (outcomes[c.outcome] || 0) + 1));
+    const visits = sc.filter((c) => c.outcome === "Visit booked").length;
+    const scores = rl.map((c) => c.score).filter((x) => x != null);
+    return {
+      n: calls.length, out: calls.filter((c) => c.dir === "O").length, conn: conn.length, talk: conn.reduce((s, c) => s + c.talk, 0),
+      avgTalk: conn.length ? conn.reduce((s, c) => s + c.talk, 0) / conn.length : null, aud: aud.length, tx: tx.length, sc: sc.length, real: rl.length,
+      score: scores.length ? Math.round(avg(scores)) : null, talkPct: withM.length ? Math.round(avg(withM.map((c) => c.metrics.counsellor_talk_pct))) : null,
+      openq: long.length ? +avg(long.map((c) => c.metrics.open_questions)).toFixed(1) : null, visits, visitRate: leads.length ? (100 * visits) / leads.length : null,
+      callbacks: sc.filter((c) => c.outcome === "Callback scheduled" || c.outcome === "Callback – no date").length,
+      notInt: sc.filter((c) => c.outcome === "Not interested").length, flagged: sc.filter((c) => (c.flags || []).length).length, flags, outcomes, crit,
+      notInCrm: calls.filter((c) => !c.crm).length,
+    };
+  }
+
+  // ---------- router ----------
+  function route() {
+    closePop();
+    $$("audio").forEach((a) => { a.pause(); if (a.src.startsWith("blob:")) URL.revokeObjectURL(a.src); });
+    const [path, query] = (location.hash.slice(1) || "/overview").split("?"), parts = path.split("/").filter(Boolean);
+    const tab = parts[0] === "call" ? "calls" : parts[0] === "counsellor" ? "counsellors" : parts[0] || "overview";
+    $$(".tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.tab === tab)));
+    drawBar(tab, parts[0]);
+    const v = $("#view"); let nodes;
+    if (parts[0] === "call") nodes = viewCall(parts[1]);
+    else if (parts[0] === "counsellor") nodes = viewCounsellor(decodeURIComponent(parts[1] || ""));
+    else nodes = ({ overview: viewOverview, calls: viewCalls, counsellors: viewCounsellors, voice: viewVoice, wow: viewWow }[tab] || viewOverview)();
+    v.replaceChildren(...[nodes].flat(Infinity).filter(Boolean));
+    document.title = ({ overview: "Overview", calls: "Calls", counsellors: "Counsellors", voice: "Parents' voice", wow: "Week on week" }[tab] || "Call") + " · GEMS Call Audit";
+    if (!route.keepScroll) window.scrollTo(0, 0);
+    route.keepScroll = false;
+  }
+  const redraw = () => { route.keepScroll = true; route(); };
+
+  // ---------- filter bar ----------
+  function drawBar(tab, page) {
+    const bar = $("#bar"); bar.textContent = "";
+    if (page === "call") { bar.hidden = true; return; }
+    bar.hidden = false;
+    if (tab === "wow") {
+      const btn = h("button", { class: "ctl", type: "button", "aria-haspopup": "dialog", "aria-expanded": "false" }, h("span", { html: ICON.cal }), h("span", { class: "cap" }, "Week ending"), fmtY(S.wowEnd), h("span", { html: ICON.down }));
+      btn.onclick = () => (POP && POP.anchor === btn ? closePop() : calendar(btn, { mode: "single", label: "Week ending", min: shift(S.first, 13), max: S.today, from: S.wowEnd, to: S.wowEnd, onApply: (f) => { S.wowEnd = f; redraw(); } }));
+      bar.append(btn);
+    } else {
+      const m0 = S.today.slice(0, 8) + "01", lmEnd = shift(m0, -1), lm0 = lmEnd.slice(0, 8) + "01";
+      const presets = [["Season to date", S.first, S.today], ["Today", S.today, S.today], ["Yesterday", shift(S.today, -1), shift(S.today, -1)],
+        ["Last 7 days", shift(S.today, -6), S.today], ["Last 14 days", shift(S.today, -13), S.today], ["Last 30 days", shift(S.today, -29), S.today],
+        ["This month", m0, S.today], ["Last month", lm0 < S.first ? S.first : lm0, lmEnd]].filter(([, f, t]) => t >= S.first).map(([l, f, t]) => [l, f < S.first ? S.first : f, t]);
+      const pre = presets.find(([, f, t]) => f === S.from && t === S.to);
+      const btn = h("button", { class: "ctl", type: "button", "aria-haspopup": "dialog", "aria-expanded": "false" },
+        h("span", { html: ICON.cal }), pre ? h("span", null, pre[0], h("span", { class: "cap" }, " · " + span(S.from, S.to))) : span(S.from, S.to), h("span", { html: ICON.down }));
+      btn.onclick = () => (POP && POP.anchor === btn ? closePop() : calendar(btn, { mode: "range", label: "Date range", min: S.first, max: S.today, from: S.from, to: S.to, presets, onApply: (f, t) => { S.from = f; S.to = t; redraw(); } }));
+      bar.append(btn);
+    }
+    const campCount = {}, repCount = {};
+    for (const c of D.calls) { campCount[c.camp] = (campCount[c.camp] || 0) + 1; repCount[c.rep] = (repCount[c.rep] || 0) + 1; }
+    const camps = Object.keys(campCount).map(Number).sort((a, b) => campCount[b] - campCount[a]);
+    if (camps.length > 1) {
+      const n = S.camps.size, label = n === 0 ? "All campuses" : n === 1 ? campName([...S.camps][0]) : n + " campuses";
+      const cb = h("button", { class: "ctl", type: "button", "aria-haspopup": "dialog", "aria-expanded": "false", title: "Campus of the lead on the call" }, h("span", { html: ICON.school }), label, h("span", { html: ICON.down }));
+      cb.onclick = () => (POP && POP.anchor === cb ? closePop() : picker(cb, "Campuses", camps.map((i) => [i, campName(i), campCount[i]]), S.camps, (set) => { S.camps = set; redraw(); }, "calls"));
+      bar.append(h("span", { class: "sep" }), cb);
+    }
+    const reps = Object.keys(repCount).sort((a, b) => repCount[b] - repCount[a]);
+    if (reps.length > 1 && page !== "counsellor") {
+      const n = S.reps.size, label = n === 0 ? "All counsellors" : n === 1 ? repName([...S.reps][0]) : n + " counsellors";
+      const rb = h("button", { class: "ctl", type: "button", "aria-haspopup": "dialog", "aria-expanded": "false" }, h("span", { html: ICON.person }), label, h("span", { html: ICON.down }));
+      rb.onclick = () => (POP && POP.anchor === rb ? closePop() : picker(rb, "Counsellors", reps.map((r) => [r, repName(r), repCount[r]]), S.reps, (set) => { S.reps = set; redraw(); }, "calls"));
+      bar.append(rb);
+    }
+  }
+
+  // ---------- small visuals ----------
+  function ring(v, size = 56, band = scoreBand(v)) {
+    const r = size / 2 - 4, c = 2 * Math.PI * r, f = v == null ? 0 : Math.max(0, Math.min(100, v)) / 100;
+    return h("div", { class: "ring", style: "width:" + size + "px;height:" + size + "px", title: "Quality score out of 100" },
+      h("svg:svg", { viewBox: "0 0 " + size + " " + size, width: size, height: size },
+        h("svg:circle", { cx: size / 2, cy: size / 2, r, fill: "none", stroke: "#EDEDF0", "stroke-width": 6 }),
+        h("svg:circle", { cx: size / 2, cy: size / 2, r, fill: "none", stroke: COLORS[band], "stroke-width": 6, "stroke-linecap": "round", "stroke-dasharray": c * f + " " + c, transform: "rotate(-90 " + size / 2 + " " + size / 2 + ")" })),
+      h("span", { style: "font-size:" + Math.round(size / 3.1) + "px" }, v == null ? "–" : v));
+  }
+  const kpis = (items) => h("section", { class: "kpis" }, items.map(([k, v, s]) => h("div", { class: "kpi" }, h("div", { class: "k" }, k), h("div", { class: "v" }, v == null ? "–" : v), h("div", { class: "s" }, s || ""))));
+  const pill = (t, cls) => h("span", { class: "pill " + cls }, t);
+  const scoreCell = (c) => (c.score === undefined ? h("span", { class: "score na", title: c.auditable ? "" : "Under " + D.min_sec + " seconds: not audited" }, c.segs && c.auditable ? "not scored" : "–") : h("span", { class: "score " + scoreBand(c.score) }, c.score == null ? "n/a" : c.score));
+  const outCell = (c) => (c.outcome ? [h("span", { class: "dot", style: "background:" + (OUT_COLORS[c.outcome] || "#ccc") }), c.outcome] : "–");
+  function stackBar(parts) {
+    const tot = parts.reduce((s, p) => s + p[1], 0) || 1, shown = parts.filter((p) => p[1]);
+    return h("div", null, h("div", { class: "stack" }, shown.map(([l, v, col]) => h("i", { style: "flex:" + v + ";background:" + col, title: l + ": " + v }))),
+      h("div", { class: "legend" }, shown.map(([l, v, col]) => h("span", null, h("span", { class: "dot", style: "background:" + col }), l + " · " + v + " (" + Math.round((100 * v) / tot) + "%)"))));
+  }
+  function brow(label, value, max, o = {}) {
+    const tr = h("div", { class: "tr" }, (o.parts || [[value, o.color || "var(--navy)"]]).map(([v, col]) => h("i", { style: "width:" + (max ? (100 * v) / max : 0) + "%;background:" + col })));
+    if (o.marker != null) tr.append(h("span", { class: "mk", style: "left:calc(" + o.marker + "% - 1px)", title: o.markerTitle || "" }));
+    const kids = [h("span", { class: "lb", title: label }, label), tr, h("span", { class: "vl" }, o.text != null ? o.text : int(value))];
+    return o.onclick ? h("button", { class: "brow", type: "button", onclick: o.onclick, "aria-pressed": String(!!o.on) }, kids) : h("div", { class: "brow", title: o.title || "" }, kids);
+  }
+  function sortTable(cols, rows, o) {   // cols: {key, label, sort, cell, cls, desc}
+    const wrap = h("div", { class: "panel" }), st = o.state || { sort: o.initial };
+    const draw = () => {
+      const [key, dir] = st.sort || [], col = cols.find((c) => c.key === key), list = [...rows];
+      if (col) list.sort((a, b) => { const x = col.sort(a), y = col.sort(b); return (x == null) - (y == null) || (x < y ? -1 : x > y ? 1 : 0) * dir; });
+      const shown = o.limit ? list.slice(0, o.limit()) : list;
+      const table = h("table", null,
+        h("thead", null, h("tr", null, cols.map((c) => h("th", { class: [c.sort ? "sortable" : "", c.cls || ""].join(" "), onclick: c.sort ? () => { st.sort = [c.key, key === c.key ? -dir : c.desc ? -1 : 1]; draw(); } : null }, c.label, key === c.key ? (dir > 0 ? " ↑" : " ↓") : "")))),
+        h("tbody", null, shown.length ? shown.map((r) => h("tr", { class: o.href ? "click" : "", onclick: o.href ? (e) => { if (!e.target.closest("a,button")) location.hash = o.href(r); } : null }, cols.map((c) => h("td", { class: c.cls || "" }, c.cell(r)))))
+          : h("tr", null, h("td", { colspan: cols.length, class: "empty l" }, o.empty || "Nothing in this range."))),
+        o.total ? h("tbody", null, h("tr", { class: "total" }, cols.map((c) => h("td", { class: c.cls || "" }, c.total ? c.total(o.total) : "")))) : null);
+      wrap.replaceChildren(h("div", { class: "scroll" }, table));
+      if (o.limit && list.length > shown.length) wrap.append(h("div", { class: "pad", style: "text-align:center" }, h("button", { class: "btn", type: "button", onclick: () => { o.more(); draw(); } }, "Show " + Math.min(100, list.length - shown.length) + " more of " + int(list.length - shown.length))));
+    };
+    draw(); return wrap;
+  }
+  function spark(vals) {
+    const w = 112, ht = 28, bw = 10, gap = (w - bw * vals.length) / (vals.length - 1), max = Math.max(...vals.map((v) => v || 0)) || 1;
+    return h("svg:svg", { width: w, height: ht, class: "spark", "aria-hidden": "true" }, vals.map((v, i) => {
+      const bh = Math.max(2, ((v || 0) / max) * (ht - 2));
+      return h("svg:rect", { x: (i * (bw + gap)).toFixed(1), y: (ht - bh).toFixed(1), width: bw, height: bh.toFixed(1), rx: 2, fill: i === vals.length - 1 ? "#00A3E0" : v == null ? "#F0F0F2" : "#D2D2D7" });
+    }));
+  }
+
+  // ---------- overview ----------
+  const REP_COLS = [   // [group, label, value(stats), format, total?]
+    ["Calling", "Calls", (s) => s.n, int], ["Calling", "Connected", (s) => s.conn, int], ["Calling", "Connect rate", (s) => pct(s.conn, s.n), null],
+    ["Calling", "Talk time", (s) => s.talk, hrs], ["Calling", "Avg call", (s) => s.avgTalk, mmss],
+    ["Audit", "Recorded (long)", (s) => s.aud, int], ["Audit", "Transcribed", (s) => s.tx, int], ["Audit", "Scored", (s) => s.sc, int],
+    ["Quality", "Avg score", (s) => s.score, null, (s) => h("span", { class: "score " + scoreBand(s.score) }, s.score == null ? "–" : s.score)],
+    ["Quality", "Talk share", (s) => s.talkPct, null, (s) => (s.talkPct == null ? "–" : pill(s.talkPct + "%", talkBand(s.talkPct)))],
+    ["Quality", "Open Qs / call", (s) => s.openq, (v) => v.toFixed(1)], ["Quality", "Red flags", (s) => s.flagged, int],
+    ["Outcome", "Visits booked", (s) => s.visits, int], ["Outcome", "Visit rate", (s) => s.visitRate, (v) => Math.round(v) + "%"],
+    ["Outcome", "Callbacks", (s) => s.callbacks, int], ["Outcome", "Not interested", (s) => s.notInt, int],
+  ];
+  function groupTable(firstLabel, rows, totalRow, href) {
+    const gs = REP_COLS.map((c, i) => i === 0 || REP_COLS[i - 1][0] !== c[0]);
+    const cell = (s, c, i) => { const v = c[2](s), node = c[4] ? c[4](s) : v == null ? "–" : c[3] ? c[3](v) : v; return h("td", { class: (gs[i] ? "g0" : "") + (v == null ? " na" : "") }, node); };
+    const head = h("thead", null,
+      h("tr", { class: "groups" }, h("th", { class: "first", rowspan: "2", style: "vertical-align:bottom" }, firstLabel), REP_COLS.map((c, i) => (gs[i] ? h("th", { class: "g0", colspan: String(REP_COLS.filter((x) => x[0] === c[0]).length) }, c[0]) : null))),
+      h("tr", { class: "cols" }, REP_COLS.map((c, i) => h("th", { class: gs[i] ? "g0" : null }, c[1]))));
+    const body = h("tbody", null, rows.map(([key, label, s]) => h("tr", { class: href ? "click" : "", onclick: href ? () => (location.hash = href(key)) : null }, h("td", { class: "first", title: label }, label), REP_COLS.map((c, i) => cell(s, c, i)))));
+    const foot = h("tbody", null, h("tr", { class: "total" }, h("td", { class: "first" }, "All"), REP_COLS.map((c, i) => cell(totalRow, c, i))));
+    return h("div", { class: "panel" }, h("div", { class: "scroll" }, h("table", null, head, body, foot)));
+  }
+  function viewOverview() {
+    const calls = scoped(), t = stats(calls);
+    if (!D.calls.length) return h("p", { class: "empty" }, "No calls for this login yet.");
+    const byRep = {}, byCamp = {};
+    for (const c of calls) { (byRep[c.rep] ||= []).push(c); (byCamp[c.camp] ||= []).push(c); }
+    const repRows = Object.entries(byRep).map(([r, cs]) => [r, repName(r), stats(cs)]).sort((a, b) => b[2].n - a[2].n);
+    const campRows = Object.entries(byCamp).map(([k, cs]) => [k, campName(+k), stats(cs)]).sort((a, b) => (+a[0] < 0) - (+b[0] < 0) || b[2].n - a[2].n);   // campuses first, the two unassigned rows last
+    const days = []; for (let d = S.from; d <= S.to; d = shift(d, 1)) days.push(d);
+    const dayKeys = days.slice(-21), perDay = {};
+    for (const c of calls) if (real(c) && c.score != null) (perDay[c.when.slice(0, 10)] ||= []).push(c.score);
+    const reps = repRows.filter((r) => r[2].real >= 3).slice(0, 10);
+    const heatCell = (v) => h("td", { style: v == null ? null : "background:" + (v >= 75 ? "var(--good-bg)" : v >= 55 ? "var(--watch-bg)" : "var(--bad-bg)") }, v == null ? "–" : v);
+    const topFlags = Object.entries(t.flags).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    return [
+      kpis([["Calls", int(t.n), int(t.out) + " outgoing"], ["Connected", pct(t.conn, t.n), int(t.conn) + " calls answered"], ["Talk time", hrs(t.talk), t.avgTalk ? mmss(t.avgTalk) + " per connected call" : ""],
+        ["Audited", int(t.sc), pct(t.sc, t.aud) ? pct(t.sc, t.aud) + " of " + int(t.aud) + " recorded calls of " + D.min_sec + "s+" : "scored by Claude"], ["Avg quality", t.score, "Good = " + D.bands.good + "+"],
+        ["Visits booked", int(t.visits), t.visitRate != null ? Math.round(t.visitRate) + "% of scored lead calls" : ""], ["Not in CRM", int(t.notInCrm), "dialled outside the CRM"]]),
+      h("section", { class: "sec" }, h("h2", null, "Counsellors", h("span", null, span(S.from, S.to))), groupTable("Counsellor", repRows, t, (r) => "/counsellor/" + encodeURIComponent(r))),
+      campRows.length > 1 ? h("section", { class: "sec" }, h("h2", null, "Campuses", h("span", null, "campus of the lead, else of the school counsellor on the call")), groupTable("Campus", campRows, t)) : null,
+      h("div", { class: "two" },
+        h("section", { class: "sec" }, h("h3", null, "Quality score by day", h("span", null, "admission conversations")),
+          h("div", { class: "panel pad" }, h("div", { class: "vcols" }, dayKeys.map((d, i) => { const v = perDay[d] ? Math.round(avg(perDay[d])) : null, every = Math.ceil(dayKeys.length / 11);
+            return h("div", { class: "vc", title: fmt(d) + (v == null ? ": no scored calls" : ": " + v + " (" + perDay[d].length + " calls)") }, h("b", null, v == null ? "" : v),
+              h("div", { class: "vb" }, h("i", { style: "height:" + (v || 0) + "%;background:" + COLORS[scoreBand(v)] })), h("span", null, (dayKeys.length - 1 - i) % every ? "" : fmt(d))); })))),
+        h("section", { class: "sec" }, h("h3", null, "Outcomes", h("span", null, int(t.sc) + " scored calls")),
+          h("div", { class: "panel pad" }, t.sc ? stackBar(D.outcomes.map((o) => [o, t.outcomes[o] || 0, OUT_COLORS[o]])) : h("p", { class: "empty" }, "No scored calls in this range.")))),
+      h("div", { class: "two" },
+        h("section", { class: "sec" }, h("h3", null, "Rubric by counsellor", h("span", null, "% of full marks · counsellors with 3+ scored calls")),
+          reps.length ? h("div", { class: "panel" }, h("div", { class: "scroll" }, h("table", { class: "heat" },
+            h("thead", null, h("tr", null, h("th", { class: "first" }, ""), reps.map(([r]) => h("th", null, repName(r).split(" ")[0])), h("th", { class: "g0" }, "Team"))),
+            h("tbody", null, D.criteria.map((k) => h("tr", null, h("td", { class: "first", title: k.look_for }, k.name), reps.map(([, , s]) => heatCell(s.crit[k.id])), heatCell(t.crit[k.id]))))))) : h("div", { class: "panel empty" }, "Not enough scored calls in this range.")),
+        h("section", { class: "sec" }, h("h3", null, "Top red flags"),
+          h("div", { class: "panel pad" }, topFlags.length ? h("div", { class: "bars" }, topFlags.map(([k, v]) => brow(D.flags[k] || k, v, topFlags[0][1], { color: "var(--bad)", onclick: () => { S.calls.flag = k; S.calls.show = "scored"; location.hash = "/calls"; } })))
+            : h("p", { class: "empty" }, "None in this range.")))),
+      h("details", { class: "defs" }, h("summary", null, "How these numbers are counted"),
+        h("p", null, h("b", null, "Calls"), " come from Exotel, so calls dialled from the Exotel app count even when the CRM has no log of them (", h("i", null, "Not in CRM"), "). The counsellor is matched by their phone number and the lead by the parent's number. ", h("b", null, "Connected"), ": the parent and counsellor were actually connected (Exotel's conversation time above 0). ", h("b", null, "Talk time"), ": that conversation time, without ringing."),
+        h("p", null, h("b", null, "Audited"), ": recorded calls of " + D.min_sec + " seconds or more are transcribed on Groq (Whisper) and scored by Claude against the rubric each night, newest first. ", h("b", null, "Avg quality"), ", talk share and the rubric only count real admission conversations (not dropped calls or non-leads). ", h("b", null, "Visit rate"), ": visits booked ÷ scored calls with a prospective parent."),
+        h("p", null, h("b", null, "Campus"), ": the campus on the lead the call was about. A call with no lead, or with a lead that has no campus, takes the campus of the school counsellor on it. What is left: ", h("i", null, "Lead with no campus"), " (set the campus on the lead in the CRM) and ", h("i", null, "Not a CRM lead"), " (the number matches no lead: wrong numbers, staff or vendors, or a parent never added to the CRM). Data as of " + D.generated + ".")),
+    ];
+  }
+
+  // ---------- calls ----------
+  function viewCalls() {
+    const f = S.calls, needle = f.q.trim().toLowerCase();
+    const base = scoped();
+    const rows = base.filter((c) => (f.show === "all" || (f.show === "connected" ? c.talk > 0 : f.show === "transcribed" ? c.segs : c.score !== undefined))
+      && (!f.outcome || c.outcome === f.outcome) && (!f.flag || (c.flags || []).some((x) => x.type === f.flag)) && (!f.band || (c.score !== undefined && scoreBand(c.score) === f.band))
+      && (!needle || [c.summary, c.coaching, c.voice, c.lead, JSON.stringify(c.leadinfo || {}), (c.segs || []).map((s) => s[2]).join(" ")].join(" ").toLowerCase().includes(needle)));
+    const sel = (key, label, opts) => { const s = h("select", { "aria-label": label, onchange: (e) => { f[key] = e.target.value; f.limit = 100; redraw(); } }, h("option", { value: "" }, label), opts.map(([v, t]) => { const o = h("option", { value: v }, t); if (f[key] === v) o.selected = true; return o; })); return s; };
+    const seg = h("div", { class: "seg", role: "group", "aria-label": "Show" }, [["scored", "Scored"], ["transcribed", "Transcribed"], ["connected", "Connected"], ["all", "All calls"]].map(([v, l]) =>
+      h("button", { type: "button", "aria-pressed": String(f.show === v), onclick: () => { f.show = v; f.limit = 100; redraw(); } }, l)));
+    const search = h("input", { type: "search", placeholder: "Search summaries and transcripts…", value: f.q });
+    search.oninput = () => { f.q = search.value; f.limit = 100; clearTimeout(viewCalls.t); viewCalls.t = setTimeout(() => { redraw(); const s = $("#view input[type=search]"); if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); } }, 300); };
+    const cols = [
+      { key: "when", label: "When", sort: (c) => c.when, desc: true, cls: "l", cell: (c) => h("span", { class: "num" }, when(c.when)) },
+      { key: "rep", label: "Counsellor", sort: (c) => repName(c.rep), cls: "l", cell: (c) => repName(c.rep) },
+      { key: "camp", label: "Campus", sort: (c) => campName(c.camp), cls: "l", cell: (c) => campName(c.camp) },
+      { key: "dir", label: "", cls: "l", cell: (c) => h("span", { class: "pill", title: c.dir === "O" ? "Outgoing" : "Incoming" }, c.dir === "O" ? "Out" : "In") },
+      { key: "talk", label: "Talk", sort: (c) => c.talk, desc: true, cell: (c) => (c.talk ? mmss(c.talk) : h("span", { class: "score na" }, c.st)) },
+      { key: "outcome", label: "Outcome", sort: (c) => c.outcome || "", cls: "l", cell: outCell },
+      { key: "summary", label: "Summary", cls: "wrapc", cell: (c) => c.voice || c.summary || "" },
+      { key: "flags", label: "Flags", sort: (c) => (c.flags || []).length, desc: true, cell: (c) => ((c.flags || []).length ? h("span", { title: c.flags.map((x) => D.flags[x.type]).join(", ") }, "⚑ " + c.flags.length) : "") },
+      { key: "score", label: "Score", sort: (c) => (c.score == null ? null : c.score), desc: true, cell: scoreCell },
+    ];
+    return [
+      h("div", { class: "ph1" }, h("div", null, h("h1", null, "Calls"), h("p", null, int(rows.length) + " of " + int(base.length) + " calls · " + span(S.from, S.to))), h("div", { class: "right" }, exportButton())),
+      h("div", { class: "filters" }, seg, search,
+        sel("outcome", "All outcomes", D.outcomes.map((o) => [o, o])),
+        sel("band", "All scores", [["good", "Good (" + D.bands.good + "+)"], ["watch", "Average"], ["poor", "Low (< " + D.bands.needs_work + ")"]]),
+        sel("flag", "All red flags", Object.entries(D.flags))),
+      sortTable(cols, rows, { state: f, href: (c) => "/call/" + c.id, limit: () => f.limit, more: () => (f.limit += 100), empty: "No calls match these filters." }),
+    ];
+  }
+
+  // ---------- one call ----------
+  function viewCall(id) {
+    const c = CALL[id]; if (!c) return [h("h1", null, "Call not found"), h("p", null, h("a", { href: "#/calls" }, "Back to calls"))];
+    const m = c.metrics, segs = c.segs || [], total = Math.max(c.talk, ...segs.map((s) => s[0] + 1), 1);
+    const audio = h("audio", { controls: true, preload: "metadata" }), head = h("div", { class: "head", style: "left:0" });
+    const status = h("div", { class: "note" }, c.audio ? "Loading recording…" : c.rec ? "The recording is no longer on the site (recordings are kept for 60 days)." : "No recording for this call.");
+    const seek = (t) => { if (t == null || !c.audio) return; audio.currentTime = t; audio.play().catch(() => {}); };
+    const ts = (t) => { const s = parseTs(t); return s == null ? null : h("button", { class: "ts", type: "button", onclick: (e) => { e.stopPropagation(); seek(s); }, title: "Play from here" }, "▶ " + t); };
+    if (c.audio) audioUrl(c).then((u) => { audio.src = u; status.remove(); }, () => { status.textContent = "Couldn't load the recording."; });
+    const tl = h("div", { class: "timeline", title: "Who spoke when. Click to jump.", onclick: (e) => { const r = e.currentTarget.getBoundingClientRect(); seek((total * (e.clientX - r.left)) / r.width); } },
+      ((m && m.timeline) || []).map(([s, e, l]) => h("span", { class: l, style: "left:" + (100 * s) / total + "%;width:" + Math.max(0.3, (100 * (e - s)) / total) + "%" })), head);
+    const lines = segs.map(([s, l, txt]) => h("div", { class: "ln", "data-t": s }, h("button", { class: "ts", type: "button", onclick: () => seek(s) }, mmss(s)), h("span", { class: "who2 " + l }, { C: "Counsellor", P: "Parent", M: "Both" }[l] || ""), h("span", null, txt)));
+    const tx = h("div", { class: "transcript" }, lines);
+    audio.ontimeupdate = () => {
+      head.style.left = (100 * audio.currentTime) / total + "%";
+      let cur = null; for (const ln of lines) { if (+ln.dataset.t <= audio.currentTime + 0.2) cur = ln; else break; }
+      lines.forEach((ln) => ln.classList.toggle("now", ln === cur));
+      if (cur) { const top = cur.offsetTop - tx.offsetTop - 100; if (Math.abs(tx.scrollTop - top) > 60) tx.scrollTop = top; }
+    };
+    const detail = h("div", { class: "cdetail", hidden: true });
+    const tiles = c.ratings ? D.criteria.map((k) => { const r = c.ratings[k.id] || {}, [lbl, cls] = RATING[r.r == null ? null : r.r];
+      return h("button", { class: "tile " + cls, type: "button", title: r.note || "", onclick: (e) => {
+        const on = e.currentTarget.classList.toggle("open"); $$(".tile").forEach((x) => x !== e.currentTarget && x.classList.remove("open"));
+        detail.hidden = !on; detail.replaceChildren(h("b", null, k.name + " · " + lbl), h("p", null, r.note || ""), (r.ev || []).map((x) => h("div", { class: "ev" }, ts(x.t), " “" + x.quote + "”")));
+      } }, h("span", { class: "tn" }, k.name), h("span", { class: "tv" }, lbl)); }) : [];
+    const li = Object.entries(c.leadinfo || {}).filter(([, v]) => v);
+    const crmLink = c.lead ? h("a", { href: "https://gemseducation.m.frappe.cloud/crm/leads/" + c.lead, target: "_blank", rel: "noopener" }, c.lead) : "No matching lead";
+    return [
+      h("div", { class: "crumb" }, h("a", { href: "#/calls" }, "Calls"), " / ", h("a", { href: "#/counsellor/" + encodeURIComponent(c.rep) }, repName(c.rep))),
+      h("div", { class: "callhead" }, h("div", { class: "av lg" }, initials(repName(c.rep))),
+        h("div", null, h("h1", null, repName(c.rep)), h("div", { class: "meta" }, c.outcome ? h("span", null, outCell(c)) : null, h("span", null, when(c.when)), h("span", null, c.dir === "O" ? "Outgoing" : "Incoming"),
+          h("span", null, c.talk ? mmss(c.talk) + " talk" : c.st), h("span", null, campName(c.camp)), c.crm ? null : pill("Not in CRM", "watch"))),
+        c.score !== undefined ? ring(c.score, 72) : null),
+      h("section", { class: "player panel pad" }, status, c.audio ? audio : null, m ? tl : null,
+        m ? h("div", { class: "legend" }, h("span", null, h("span", { class: "dot", style: "background:var(--c)" }), "Counsellor"), h("span", null, h("span", { class: "dot", style: "background:var(--p)" }), "Parent"), h("span", null, h("span", { class: "dot", style: "background:var(--m)" }), "Both")) : null),
+      h("div", { class: "side" },
+        h("div", { class: "sec", style: "gap:28px" },
+          c.summary ? h("section", { class: "sec" }, h("h3", null, "Summary"), h("div", null, h("p", { class: "lead-line" }, c.summary), c.coaching ? h("div", { class: "coach" }, h("b", null, "Coaching: "), c.coaching) : null)) :
+            h("p", { class: "empty", style: "padding:0" }, c.segs ? "Transcribed, not scored yet. Claude scores new calls each night." : c.auditable && c.rec ? "Not transcribed yet." : "Too short to audit."),
+          tiles.length ? h("section", { class: "sec" }, h("h3", null, "Rubric", h("span", null, "tap a tile for the reason and the moment")), h("div", { class: "tiles" }, tiles), detail) : null,
+          segs.length ? h("section", { class: "sec" }, h("h3", null, "Transcript", h("span", null, segs.length + " lines · English rendering of the call")), h("div", { class: "panel pad" }, tx)) : null),
+        h("div", { class: "sec", style: "gap:28px" },
+          (c.topics || []).length || c.voice ? h("section", { class: "sec" }, h("h3", null, "What the parent raised"), h("div", { class: "panel pad" },
+            c.voice ? h("p", { style: "margin:0 0 8px" }, c.voice) : null,
+            c.profile ? h("dl", { class: "kv", style: "margin:0 0 8px" }, [["Now at", [c.profile.current_school, c.profile.school_type].filter((x) => x && x !== "unknown").join(" · ")],
+              ["Deciding", c.profile.decision_maker], ["Lives", c.profile.distance], ["Joining", (c.profile.join_when || "").replace("_", " ")]]
+              .filter(([, v]) => v && v !== "unknown").map(([k, v]) => [h("dt", null, k), h("dd", null, v)])) : null,
+            (c.topics || []).map((x) => h("div", { class: "quote" }, h("div", null, pill(topicName(x.topic), x.kind === "concern" ? "watch" : "good"), " ", ts(x.t)), h("div", null, "“" + x.quote + "”"))))) : null,
+          m ? h("section", { class: "sec" }, h("h3", null, "Listening"), h("div", { class: "panel pad" },
+            h("div", { class: "stack", style: "height:22px" }, h("i", { style: "flex:" + m.counsellor_talk_pct + ";background:var(--c)" }), h("i", { style: "flex:" + (100 - m.counsellor_talk_pct) + ";background:var(--p)" })),
+            h("dl", { class: "kv" }, h("dt", null, "Counsellor talk share"), h("dd", null, pill(m.counsellor_talk_pct + "%", talkBand(m.counsellor_talk_pct)), " target ≤ " + LI().talk_pct.good_max + "%"),
+              h("dt", null, "Longest monologue"), h("dd", null, mmss(m.longest_monologue_sec)), h("dt", null, "Open questions"), h("dd", null, m.open_questions + " of " + m.questions + " questions")),
+            h("p", { class: "note", style: "margin-top:10px" }, m.source === "channels" ? "Measured from separate audio channels." : "Estimated from the transcript."))) : null,
+          (c.flags || []).length ? h("section", { class: "sec" }, h("h3", null, "Red flags"), h("div", { class: "panel pad" }, c.flags.map((f) => h("div", { class: "flag", title: f.detail }, h("span", null, "⚑ " + (D.flags[f.type] || f.type), f.detail ? h("div", { class: "note" }, f.detail) : null), ts(f.t))))) : null,
+          h("details", { class: "box" }, h("summary", null, "CRM and lead details"),
+            h("dl", { class: "kv" }, h("dt", null, "Lead"), h("dd", null, crmLink), h("dt", null, "CRM outcome"), h("dd", null, c.crm_out || pill(c.crm ? "Not logged" : "No CRM log", "poor")),
+              c.crm_suggest ? [h("dt", null, "Should be"), h("dd", null, c.crm_suggest)] : null, c.intent ? [h("dt", null, "Intent"), h("dd", null, c.intent)] : null,
+              li.map(([k, v]) => [h("dt", null, k.replace(/_/g, " ")), h("dd", null, v)]))),
+          c.ratings ? reviewCard(c) : null)),
+    ];
+  }
+
+  // ---------- counsellors ----------
+  function viewCounsellors() {
+    const calls = scoped(), by = {};
+    for (const c of calls) (by[c.rep] ||= []).push(c);
+    const list = Object.entries(by).map(([r, cs]) => [r, stats(cs)]).sort((a, b) => b[1].n - a[1].n);
+    return [
+      h("div", { class: "ph1" }, h("div", null, h("h1", null, "Counsellors"), h("p", null, list.length + " people made or took calls · " + span(S.from, S.to)))),
+      h("div", { class: "cards" }, list.map(([r, s]) => h("a", { class: "ccard", href: "#/counsellor/" + encodeURIComponent(r) },
+        h("div", { class: "top2" }, h("div", { class: "av" }, initials(repName(r))), h("div", null, h("div", { class: "nm" }, repName(r)), h("div", { class: "sb" }, int(s.sc) + " calls scored")), ring(s.score, 52)),
+        h("div", { class: "st" }, h("div", null, h("b", null, int(s.n)), h("span", null, "calls")), h("div", null, h("b", null, pct(s.conn, s.n) || "–"), h("span", null, "connected")),
+          h("div", null, h("b", null, s.visits), h("span", null, "visits booked")))))),
+    ];
+  }
+  function viewCounsellor(id) {
+    if (!D.counsellors[id]) return [h("h1", null, "Not found"), h("p", null, h("a", { href: "#/counsellors" }, "All counsellors"))];
+    const all = scoped(), mine = all.filter((c) => c.rep === id), s = stats(mine), t = stats(all), p = D.counsellors[id].persona;
+    const chips = (arr, cls) => h("div", { class: "chips" }, (arr || []).map((x) => h("span", { class: "chip " + cls, title: x.detail || "" }, x.title)));
+    const cols = [
+      { key: "when", label: "When", sort: (c) => c.when, desc: true, cls: "l", cell: (c) => when(c.when) },
+      { key: "camp", label: "Campus", sort: (c) => campName(c.camp), cls: "l", cell: (c) => campName(c.camp) },
+      { key: "talk", label: "Talk", sort: (c) => c.talk, desc: true, cell: (c) => mmss(c.talk) },
+      { key: "outcome", label: "Outcome", sort: (c) => c.outcome || "", cls: "l", cell: outCell },
+      { key: "summary", label: "Summary", cls: "wrapc", cell: (c) => c.voice || c.summary || "" },
+      { key: "score", label: "Score", sort: (c) => c.score, desc: true, cell: scoreCell },
+    ];
+    const st = { sort: ["when", -1], limit: 50 };
+    return [
+      h("div", { class: "crumb" }, h("a", { href: "#/counsellors" }, "Counsellors")),
+      h("div", { class: "callhead" }, h("div", { class: "av lg" }, initials(repName(id))), h("div", null, h("h1", null, repName(id)), h("div", { class: "meta" }, h("span", null, int(s.n) + " calls · " + int(s.sc) + " scored"), h("span", null, span(S.from, S.to)))), ring(s.score, 72)),
+      p && p.headline ? h("p", { class: "headline" }, p.headline) : null,
+      kpis([["Calls", int(s.n), int(s.out) + " outgoing"], ["Connected", pct(s.conn, s.n), int(s.conn) + " calls"], ["Talk time", hrs(s.talk), s.avgTalk ? mmss(s.avgTalk) + " per call" : ""],
+        ["Talk share", s.talkPct == null ? null : s.talkPct + "%", "team " + (t.talkPct == null ? "–" : t.talkPct + "%") + " · target ≤ " + LI().talk_pct.good_max + "%"],
+        ["Open questions", s.openq, "per call of 2+ min · team " + (t.openq == null ? "–" : t.openq)], ["Visits booked", int(s.visits), s.visitRate != null ? Math.round(s.visitRate) + "% of lead calls" : ""]]),
+      p ? h("div", { class: "two" }, h("section", { class: "sec" }, h("h3", null, "Good at"), chips(p.strengths, "plus"), h("h3", { style: "margin-top:14px" }, "Work on"), chips(p.development, "minus")),
+        h("section", { class: "sec" }, h("h3", null, "Coaching focus"), p.coaching_plan && p.coaching_plan.length ? h("ol", { class: "list" }, p.coaching_plan.slice(0, 3).map((x) => h("li", null, x))) : h("p", { class: "empty" }, "–"))) : null,
+      h("div", { class: "two" },
+        h("section", { class: "sec" }, h("h3", null, "Rubric vs team", h("span", null, "bar = " + repName(id).split(" ")[0] + " · line = team")),
+          h("div", { class: "panel pad" }, h("div", { class: "bars" }, D.criteria.map((k) => { const v = s.crit[k.id], tv = t.crit[k.id];
+            return brow(k.name, v || 0, 100, { color: COLORS[band3(v, 75, 55)], marker: tv, markerTitle: "Team " + tv + "%", text: v == null ? "–" : v + "%", title: k.look_for }); })))),
+        h("section", { class: "sec" }, h("h3", null, "Outcomes"), h("div", { class: "panel pad" }, s.sc ? stackBar(D.outcomes.map((o) => [o, s.outcomes[o] || 0, OUT_COLORS[o]])) : h("p", { class: "empty" }, "No scored calls in this range.")))),
+      h("section", { class: "sec" }, h("h3", null, "Calls", h("span", null, "connected calls")), sortTable(cols, mine.filter((c) => c.talk > 0), { state: st, href: (c) => "/call/" + c.id, limit: () => st.limit, more: () => (st.limit += 100) })),
+    ];
+  }
+
+  // ---------- parents' voice ----------
+  const topicName = (k) => { const d = (D.topics || {})[k]; return d ? (k === "grade_age" ? "Grade & age" : k === "teachers_safety" ? "Teachers & safety" : k === "school_status" ? "School status" : k === "admission_process" ? "Admission process" : k === "comparing" ? "Comparing schools" : k[0].toUpperCase() + k.slice(1)) : k; };
+  function viewVoice() {
+    const calls = scoped().filter((c) => c.score !== undefined), tagged = calls.filter((c) => c.topics);
+    const cnt = {}, quotes = {};
+    for (const c of tagged) {
+      const seen = {};
+      for (const x of c.topics) {
+        const k = x.topic; cnt[k] ||= { concern: 0, interest: 0, calls: 0 };
+        if (!seen[k]) { cnt[k].calls++; seen[k] = 1; }
+        cnt[k][x.kind === "concern" ? "concern" : "interest"]++;
+        (quotes[k] ||= []).push([c, x]);
+      }
+    }
+    const topics = Object.entries(cnt).sort((a, b) => b[1].calls - a[1].calls);
+    if (S.topic && !cnt[S.topic]) S.topic = null;
+    const pick = S.topic || (topics[0] && topics[0][0]);
+    const intents = {}; for (const c of tagged) if (c.intent) intents[c.intent] = (intents[c.intent] || 0) + 1;
+    const byCamp = {}; for (const c of tagged) { const m = (byCamp[c.camp] ||= { n: 0 }); m.n++; const seen = {}; for (const x of c.topics) if (!seen[x.topic]) { seen[x.topic] = 1; m[x.topic] = (m[x.topic] || 0) + 1; } }
+    const camps = Object.keys(byCamp).map(Number).sort((a, b) => byCamp[b].n - byCamp[a].n).slice(0, 8);
+    const max = topics.length ? topics[0][1].calls : 1;
+    return [
+      h("div", { class: "ph1" }, h("div", null, h("h1", null, "What parents are saying"), h("p", null, "Topics parents raised on " + int(tagged.length) + " audited calls · " + span(S.from, S.to)))),
+      tagged.length < calls.length ? h("p", { class: "note" }, int(calls.length - tagged.length) + " scored calls in this range don't have topics yet. Claude adds them during the nightly scoring.") : null,
+      !tagged.length ? h("div", { class: "panel empty" }, "No calls with topics in this range yet.") :
+      h("div", { class: "two" },
+        h("section", { class: "sec" }, h("h3", null, "Topics", h("span", null, "share of calls where the parent raised it")),
+          h("div", { class: "panel pad" }, h("div", { class: "bars" }, topics.map(([k, v]) => brow(topicName(k), v.calls, max, { parts: [[(v.calls * v.concern) / (v.concern + v.interest), "var(--bad)"], [(v.calls * v.interest) / (v.concern + v.interest), "var(--cyan)"]],
+            text: pct(v.calls, tagged.length), on: k === pick, onclick: () => { S.topic = k; redraw(); } }))),
+            h("div", { class: "legend" }, h("span", null, h("span", { class: "dot", style: "background:var(--bad)" }), "Concern"), h("span", null, h("span", { class: "dot", style: "background:var(--cyan)" }), "Interest")))),
+        h("section", { class: "sec" }, h("h3", null, pick ? topicName(pick) : "", h("span", null, pick ? (D.topics[pick] || "") : "")),
+          h("div", { class: "panel pad", style: "max-height:560px;overflow-y:auto" }, pick ? (quotes[pick] || []).sort((a, b) => (b[0].when > a[0].when ? 1 : -1)).slice(0, 40).map(([c, x]) => h("div", { class: "quote" },
+            h("div", null, pill(x.kind === "concern" ? "Concern" : "Interest", x.kind === "concern" ? "watch" : "good"), " “" + x.quote + "”"),
+            h("div", { class: "src" }, h("a", { href: "#/call/" + c.id }, when(c.when) + " · " + campName(c.camp) + " · " + repName(c.rep))))) : null))),
+      tagged.length ? h("div", { class: "two" },
+        h("section", { class: "sec" }, h("h3", null, "By campus", h("span", null, "% of each campus's calls")),
+          h("div", { class: "panel" }, h("div", { class: "scroll" }, h("table", { class: "heat" },
+            h("thead", null, h("tr", null, h("th", { class: "first" }, "Topic"), camps.map((i) => h("th", null, campName(i), h("br"), h("span", { class: "p" }, byCamp[i].n + " calls"))))),
+            h("tbody", null, topics.slice(0, 10).map(([k]) => h("tr", null, h("td", { class: "first" }, topicName(k)), camps.map((i) => { const v = byCamp[i][k] || 0, sh = byCamp[i].n ? v / byCamp[i].n : 0;
+              return h("td", { style: v ? "background:rgba(0,163,224," + (0.06 + sh * 0.6).toFixed(3) + ")" : null, class: v ? "" : "na" }, v ? Math.round(100 * sh) + "%" : "–"); })))))))),
+        h("section", { class: "sec" }, h("h3", null, "How keen they sounded", h("span", null, "Claude's read of each call")),
+          h("div", { class: "panel pad" }, stackBar([["Hot", intents.Hot || 0, "#1A7F37"], ["Warm", intents.Warm || 0, "#00A3E0"], ["Cold", intents.Cold || 0, "#C4302B"], ["Unknown", intents.Unknown || 0, "#D2D2D7"]])))) : null,
+    ];
+  }
+
+  // ---------- week on week ----------
+  const WOW = [   // [group, label, value(stats), kind, better]
+    ["Calling", "Calls", (s) => s.n, "int", 1], ["Calling", "Connected", (s) => s.conn, "int", 1], ["Calling", "Connect rate", (s) => (s.n ? (100 * s.conn) / s.n : null), "pct", 1],
+    ["Calling", "Talk time (hours)", (s) => s.talk / 3600, "dec", 1], ["Calling", "Avg call (min)", (s) => (s.avgTalk == null ? null : s.avgTalk / 60), "dec", 1],
+    ["Audit", "Calls scored", (s) => s.sc, "int", 1], ["Quality", "Avg quality score", (s) => s.score, "int", 1], ["Quality", "Counsellor talk share", (s) => s.talkPct, "pct", -1],
+    ["Quality", "Open questions / call", (s) => s.openq, "dec", 1], ["Quality", "Calls with red flags", (s) => (s.sc ? (100 * s.flagged) / s.sc : null), "pct", -1],
+    ["Outcome", "Visits booked", (s) => s.visits, "int", 1], ["Outcome", "Visit rate", (s) => s.visitRate, "pct", 1], ["Outcome", "Not interested", (s) => (s.sc ? (100 * s.notInt) / s.sc : null), "pct", -1],
+  ];
+  const show = (v, k) => (v == null ? "–" : k === "pct" ? v.toFixed(1) + "%" : k === "dec" ? v.toFixed(1) : int(v));
+  function change(a, b, k, better) {
+    if (a == null || b == null) return null;
+    let txt, d;
+    if (k === "pct") { d = b - a; txt = (d > 0 ? "+" : d < 0 ? "−" : "") + Math.abs(d).toFixed(1) + " pts"; }
+    else if (!a) { if (!b) return { txt: "no change", cls: "" }; return { txt: "new", cls: better > 0 ? "up" : "down" }; }
+    else { d = (b - a) / a; txt = (d > 0 ? "+" : d < 0 ? "−" : "") + Math.abs(100 * d).toFixed(0) + "%"; }
+    const flat = k === "pct" ? Math.abs(d) < 0.5 : Math.abs(d) < 0.005;
+    return { txt: flat ? "no change" : txt, cls: flat ? "" : d * better > 0 ? "up" : "down" };
+  }
+  function viewWow() {
+    const week = (end) => stats(scoped(shift(end, -6), end));
+    const ends = Array.from({ length: 8 }, (_, i) => shift(S.wowEnd, -7 * (7 - i))), weeks = ends.map(week), cur = weeks[7], prev = weeks[6];
+    const cards = ["Calls", "Connected", "Talk time (hours)", "Avg quality score"].map((name) => {
+      const [, label, f, k, better] = WOW.find((x) => x[1] === name), a = f(prev), b = f(cur), c = change(a, b, k, better);
+      return h("div", { class: "wcard" }, h("div", { class: "k" }, label), h("div", { class: "v" }, show(b, k)), h("div", { class: "row" }, c ? h("span", { class: "delta " + c.cls }, c.txt) : null, "vs " + show(a, k) + " the week before"));
+    });
+    const body = h("tbody"); let stage = null;
+    for (const [g, label, f, k, better] of WOW) {
+      if (g !== stage) { stage = g; body.append(h("tr", { class: "stage" }, h("td", { class: "first", colspan: "5" }, g))); }
+      const a = f(prev), b = f(cur), c = change(a, b, k, better);
+      body.append(h("tr", null, h("td", { class: "first" }, label), h("td", null, show(a, k)), h("td", { style: "font-weight:600" }, show(b, k)), h("td", null, c ? h("span", { class: "delta " + c.cls }, c.txt) : "–"), h("td", null, spark(weeks.map(f)))));
+    }
+    return [
+      h("div", { class: "ph1" }, h("div", null, h("h1", null, "Last 7 days vs the 7 before"), h("p", null, span(shift(S.wowEnd, -6), S.wowEnd) + " compared with " + span(shift(S.wowEnd, -13), shift(S.wowEnd, -7))))),
+      h("section", { class: "wcards" }, cards),
+      h("section", { class: "panel" }, h("div", { class: "scroll" }, h("table", null, h("thead", null, h("tr", null, h("th", { class: "first" }, "Metric"),
+        h("th", null, "Previous 7 days"), h("th", null, "Last 7 days"), h("th", null, "Change"), h("th", null, "8-week trend"))), body))),
+      h("p", { class: "note" }, "Scores need a night to arrive, so the latest days can show fewer scored calls until the next nightly run."),
+    ];
+  }
+
+  // ---------- reviews (kept in this browser, exported as JSON for ingest_reviews.py) ----------
+  const REV_KEY = () => "gems-call-audit.reviews." + D.rubric;
+  const rget = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
+  const rset = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
+  function exportButton() {
+    const n = Object.keys(rget(REV_KEY(), {})).length;
+    return n ? h("button", { class: "btn", type: "button", onclick: () => {
+      const a = h("a", { href: URL.createObjectURL(new Blob([JSON.stringify({ exported_at: new Date().toISOString(), rubric: D.rubric, reviews: Object.values(rget(REV_KEY(), {})) }, null, 1)], { type: "application/json" })),
+        download: "call-reviews-" + D.rubric + "-" + new Date().toISOString().slice(0, 10) + ".json" });
+      document.body.append(a); a.click(); a.remove();
+    } }, "Export " + n + " review" + (n === 1 ? "" : "s")) : null;
+  }
+  function reviewCard(c) {
+    const saved = rget(REV_KEY(), {})[c.id], base = saved || c.gold || { ratings: Object.fromEntries(D.criteria.map((k) => [k.id, c.ratings[k.id] ? c.ratings[k.id].r : null])), outcome: c.outcome, flags: (c.flags || []).map((f) => f.type), comment: "" };
+    const sel = {};
+    const rows = D.criteria.map((k) => { const s = h("select", null, [2, 1, 0, null].map((v) => { const o = h("option", { value: String(v) }, RATING[v][0]); if ((base.ratings[k.id] == null ? null : base.ratings[k.id]) === v) o.selected = true; return o; })); sel[k.id] = s; return h("tr", null, h("td", null, k.name), h("td", null, s)); });
+    const out = h("select", null, D.outcomes.map((o) => { const e = h("option", { value: o }, o); if (o === base.outcome) e.selected = true; return e; }));
+    const fl = h("div", { class: "flagbox" }, Object.entries(D.flags).map(([k, n]) => { const i = h("input", { type: "checkbox", value: k }); i.checked = base.flags.includes(k); return h("label", null, i, " " + n); }));
+    const who = h("input", { type: "text", placeholder: "Your name", value: rget("gems-call-audit.reviewer", "") });
+    const cm = h("textarea", { placeholder: "What did the audit get wrong?" }); cm.value = base.comment || "";
+    const msg = h("span", { class: "note" });
+    return h("details", { class: "box review" }, h("summary", null, saved ? "Your review ✓" : "Correct this audit"),
+      h("table", { style: "margin-top:10px" }, rows, h("tr", null, h("td", null, "Outcome"), h("td", null, out))), h("p", { class: "note", style: "margin:10px 0 4px" }, "Red flags"), fl,
+      h("p", { class: "note", style: "margin:10px 0 4px" }, "Comment"), cm,
+      h("div", { style: "display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap" }, who, h("button", { class: "btn dark", type: "button", onclick: () => {
+        if (!who.value.trim()) { msg.textContent = "Add your name first."; who.focus(); return; }
+        rset("gems-call-audit.reviewer", who.value.trim());
+        const all = rget(REV_KEY(), {});
+        all[c.id] = { call: c.id, rubric: D.rubric, reviewer: who.value.trim(), at: new Date().toISOString(), outcome: out.value, comment: cm.value.trim(),
+          ratings: Object.fromEntries(D.criteria.map((k) => [k.id, sel[k.id].value === "null" ? null : +sel[k.id].value])), flags: [...fl.querySelectorAll("input:checked")].map((i) => i.value) };
+        msg.textContent = rset(REV_KEY(), all) ? "Saved. Export it from the Calls page." : "Couldn't save (browser storage is blocked).";
+      } }, "Save"), msg));
+  }
+})();
+</script>
+</body>
+</html>
